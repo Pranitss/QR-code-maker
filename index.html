@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Large Data QR Code Generator</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 80%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #text {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #qrcode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Large Data QR Code Generator</h1>
+        <textarea id="text" placeholder="Enter your large data here"></textarea>
+        <div id="qrcode"></div>
+        <button id="saveBtn">Save QR Code</button>
+    </div>
+
+    <script>
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width: 400,
+            height: 400,
+            colorDark: "#000",
+            colorLight: "#fff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        function makeCode() {
+            var elText = document.getElementById("text");
+
+            if (!elText.value) {
+                elText.focus();
+                return;
+            }
+
+            qrcode.makeCode(elText.value);
+        }
+
+        document.getElementById("text").addEventListener("input", makeCode);
+
+        makeCode();
+
+        document.getElementById("saveBtn").addEventListener("click", function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = qrcode._oDrawing._elImage.width;
+            canvas.height = qrcode._oDrawing._elImage.height;
+            var context = canvas.getContext("2d");
+            context.drawImage(qrcode._oDrawing._elImage, 0, 0);
+
+            // Convert canvas content to base64 data URL
+            var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+            // Create a temporary anchor element and trigger a click event to download the image
+            var link = document.createElement("a");
+            link.href = image;
+            link.download = "qr_code.png";
+            link.click();
+        });
+    </script>
+</body>
+</html>
